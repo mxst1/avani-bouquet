@@ -10,4 +10,71 @@
 </style>
 </head>
 <body><main class="window"><div class="bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>Terminal</span></div><div class="stage"><canvas id="art" width="720" height="800" role="img" aria-label="A slowly rotating bouquet of pink lilies and flowers, made from colorful text characters"></canvas></div><div class="footer"><span class="dedication">for Avani ♡</span><button id="replay" aria-label="Restart bouquet rotation">replay ↺</button></div></main>
-<script>const canvas=document.querySelector("#art"),ctx=canvas.getContext("2d");ctx.font="18px monospace";ctx.fillStyle="#f5b7cd";ctx.textAlign="center";ctx.fillText("for Avani ♡",360,390);</script></body></html>
+<script>
+(()=>{
+const canvas=document.querySelector('#art'),ctx=canvas.getContext('2d');
+const source=document.createElement('canvas');source.width=360;source.height=400;const g=source.getContext('2d',{willReadFrequently:true});g.scale(.5,.5);
+const reduced=true;
+const flowers=[
+ {x:-205,y:-188,z:35,r:57,a:-.45,t:'lily'},
+ {x:-117,y:-275,z:55,r:64,a:-.24,t:'lily'},
+ {x:18,y:-300,z:60,r:67,a:.03,t:'lily'},
+ {x:151,y:-260,z:48,r:63,a:.32,t:'lily'},
+ {x:224,y:-157,z:10,r:48,a:.6,t:'rose'},
+ {x:-148,y:-82,z:110,r:52,a:-.38,t:'rose'},
+ {x:-22,y:-155,z:130,r:60,a:0,t:'lily'},
+ {x:116,y:-115,z:112,r:55,a:.30,t:'lily'},
+ {x:-205,y:-188,z:-35,r:57,a:Math.PI+.45,t:'lily'},
+ {x:-117,y:-275,z:-55,r:64,a:Math.PI+.24,t:'lily'},
+ {x:18,y:-300,z:-60,r:67,a:Math.PI-.03,t:'lily'},
+ {x:151,y:-260,z:-48,r:63,a:Math.PI-.32,t:'lily'},
+ {x:224,y:-157,z:-10,r:48,a:Math.PI-.6,t:'rose'},
+ {x:-148,y:-82,z:-110,r:52,a:Math.PI+.38,t:'rose'},
+ {x:-22,y:-155,z:-130,r:60,a:Math.PI,t:'lily'},
+ {x:116,y:-115,z:-112,r:55,a:Math.PI-.30,t:'lily'},
+ {x:-45,y:-242,z:155,r:62,a:Math.PI/2,t:'lily'},
+ {x:55,y:-104,z:132,r:52,a:Math.PI/2,t:'rose'},
+ {x:45,y:-242,z:-155,r:62,a:-Math.PI/2,t:'lily'},
+ {x:-55,y:-104,z:-132,r:52,a:-Math.PI/2,t:'rose'}
+];
+const leaves=[];for(let i=0;i<14;i++){let a=i*Math.PI*2/14;leaves.push({x:Math.cos(a)*110,y:20+(i%3)*19,z:Math.sin(a)*75,a,len:75+(i%3)*12})}
+function polygon(points,fill,stroke,width=1){g.beginPath();g.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)g.lineTo(points[i][0],points[i][1]);g.closePath();g.fillStyle=fill;g.fill();if(stroke){g.strokeStyle=stroke;g.lineWidth=width;g.stroke()}}
+function lily(x,y,r,scale,back,seed){
+ g.save();g.translate(x,y);g.scale(scale,1);
+ const colors=back?['#d27597','#e796b1','#c9698e','#efabc1','#d77b9b','#e69bb5']:['#ed93b3','#ffd5e2','#f5a8c2','#ffe1e9','#f29bb9','#ffd1df'];
+ for(let k=0;k<6;k++){
+  let a=k*Math.PI/3-.52;g.save();g.rotate(a);
+  g.beginPath();g.moveTo(0,3);g.bezierCurveTo(r*.17,-r*.24,r*.58,-r*.31,r*.98,0);g.bezierCurveTo(r*.59,r*.26,r*.20,r*.23,0,3);g.closePath();g.fillStyle=colors[(k+seed)%6];g.fill();g.strokeStyle=back?'#ba6686':'#e87da3';g.lineWidth=2;g.stroke();
+  g.beginPath();g.moveTo(r*.12,0);g.quadraticCurveTo(r*.43,-r*.06,r*.79,0);g.strokeStyle=back?'#ecacc0':'#fff0f3';g.lineWidth=1.6;g.stroke();
+  if(!back){g.fillStyle='#c85b82';for(let j=0;j<3;j++){g.beginPath();g.arc(r*(.24+j*.11),((j%2)*2-1)*r*.055,1.7,0,Math.PI*2);g.fill()}}
+  g.restore();
+ }
+ g.fillStyle=back?'#c77792':'#f3cf83';g.beginPath();g.arc(0,0,r*.09,0,Math.PI*2);g.fill();
+ if(!back){for(let k=0;k<5;k++){let a=k*Math.PI*2/5;g.strokeStyle='#b95c70';g.lineWidth=1.8;g.beginPath();g.moveTo(0,0);g.lineTo(Math.cos(a)*r*.19,Math.sin(a)*r*.19);g.stroke();g.fillStyle='#9b4f61';g.beginPath();g.arc(Math.cos(a)*r*.19,Math.sin(a)*r*.19,2.5,0,Math.PI*2);g.fill()}}
+ g.restore();
+}
+function rose(x,y,r,scale,back){g.save();g.translate(x,y);g.scale(scale,1);for(let k=0;k<9;k++){let a=k*Math.PI*2/9;g.save();g.rotate(a);g.beginPath();g.ellipse(r*.47,0,r*.49,r*.30,0,0,Math.PI*2);g.fillStyle=k%2?'#f3a0bd':'#f8c4d6';g.fill();g.strokeStyle='#d9799c';g.lineWidth=2;g.stroke();g.restore()}g.fillStyle='#e888ab';g.beginPath();g.arc(0,0,r*.36,0,Math.PI*2);g.fill();g.strokeStyle='#ffdae5';g.lineWidth=3;g.beginPath();g.arc(0,0,r*.23,.4,5.5);g.arc(0,0,r*.10,4,8);g.stroke();g.restore()}
+let started=performance.now(),last=0;
+function draw(now){if(!reduced&&now-last<50){requestAnimationFrame(draw);return}last=now;
+ const angle=reduced?0:Math.max(0,(now-started)/1000-1.5)*Math.PI*2/24,c=Math.cos(angle),s=Math.sin(angle);
+ function p(x,y,z){return [360+x*c+z*s,390+y,-x*s+z*c]}
+ const items=[];
+ // Slender stems converge behind the paper.
+ for(const f of flowers){const a=p(f.x,f.y+f.r*.55,f.z),b=p(0,300,0);items.push({z:(a[2]+b[2])/2,run(){g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.lineWidth=5;g.strokeStyle='#7da676';g.stroke()}})}
+ // Long pointed foliage spreads out around the flowers.
+ for(const l of leaves){let tip=p(l.x+Math.cos(l.a)*l.len,l.y-l.len*.6,l.z+Math.sin(l.a)*l.len*.65),base=p(l.x*.24,135,l.z*.24),mid=p(l.x,l.y,l.z);items.push({z:mid[2],run(){let dx=tip[0]-base[0],dy=tip[1]-base[1],d=Math.hypot(dx,dy)||1,nx=-dy/d*18,ny=dx/d*18;g.beginPath();g.moveTo(base[0],base[1]);g.quadraticCurveTo(mid[0]+nx,mid[1]+ny,tip[0],tip[1]);g.quadraticCurveTo(mid[0]-nx,mid[1]-ny,base[0],base[1]);g.fillStyle=l.a%2?'#83bd85':'#9acb92';g.fill();g.strokeStyle='#c0e4aa';g.lineWidth=2;g.beginPath();g.moveTo(base[0],base[1]);g.lineTo(tip[0],tip[1]);g.stroke()}})}
+ // Paper is a three-dimensional cone made from alternating folded facets.
+ for(let i=0;i<16;i++){let a=i*Math.PI*2/16,b=(i+1)*Math.PI*2/16;let pts=[p(Math.cos(a)*202,125,Math.sin(a)*95),p(Math.cos(b)*202,125,Math.sin(b)*95),p(Math.cos(b)*25,310,Math.sin(b)*18),p(Math.cos(a)*25,310,Math.sin(a)*18)];items.push({z:pts.reduce((n,q)=>n+q[2],0)/4,run(){polygon(pts,i%2?'#d4d3ca':'#efebe1','#a9aaa2',1.5)}})}
+ for(let i=0;i<flowers.length;i++){const f=flowers[i],q=p(f.x,f.y,f.z),facing=Math.cos(angle-f.a),scale=Math.abs(facing);if(scale<.22)continue;items.push({z:q[2],run(){if(f.t==='lily')lily(q[0],q[1],f.r,scale,facing<0,i%6);else rose(q[0],q[1],f.r,scale,facing<0)}})}
+ g.clearRect(0,0,720,800);items.sort((a,b)=>a.z-b.z);items.forEach(o=>o.run());
+ // A small ribbon and the stems below it finish the silhouette.
+ for(let i=-2;i<=2;i++){let a=p(i*5,307,0),b=p(i*4,360,0);g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.strokeStyle=i%2?'#8dc78a':'#add7a3';g.lineWidth=4;g.stroke()}
+ polygon([[332,686],[388,686],[386,702],[334,702]],'#e78eae','#f3b4ca',2);
+ g.beginPath();g.moveTo(356,693);g.bezierCurveTo(332,669,313,680,326,698);g.bezierCurveTo(337,707,348,699,356,693);g.moveTo(365,693);g.bezierCurveTo(388,669,407,680,394,698);g.bezierCurveTo(383,707,372,699,365,693);g.strokeStyle='#f2b2c8';g.lineWidth=5;g.stroke();
+ const data=g.getImageData(0,0,360,400).data;ctx.clearRect(0,0,720,800);ctx.font='bold 10px monospace';ctx.textBaseline='middle';
+ const chars=['=','-','+','=',':','-'];for(let y=2,row=0;y<400;y+=4,row++){for(let x=2,col=0;x<360;x+=3,col++){const i=(y*360+x)*4;if(data[i+3]<115)continue;ctx.fillStyle=`rgb(${data[i]},${data[i+1]},${data[i+2]})`;ctx.fillText(chars[(row*7+col*3)%chars.length],x*2,y*2)}}
+ if(!reduced)requestAnimationFrame(draw)
+}
+requestAnimationFrame(draw);document.querySelector('#replay').addEventListener('click',()=>{started=performance.now();if(reduced)requestAnimationFrame(draw)});
+})();
+</script></body></html>
