@@ -14,7 +14,7 @@
 (()=>{
 const canvas=document.querySelector('#art'),ctx=canvas.getContext('2d');
 const source=document.createElement('canvas');source.width=360;source.height=400;const g=source.getContext('2d',{willReadFrequently:true});g.scale(.5,.5);
-const reduced=true;
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const flowers=[
  {x:-205,y:-188,z:35,r:57,a:-.45,t:'lily'},
  {x:-117,y:-275,z:55,r:64,a:-.24,t:'lily'},
